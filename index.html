@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>What I Actually See When I Open Your Firmware CV | RunTime Recruitment</title>
   <meta name="description" content="A $27 digital PDF guide from Lance Harvie on why firmware CVs get closed quickly and how to fix yours.">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Raleway:wght@700;800;900&display=swap" rel="stylesheet">
@@ -285,6 +286,93 @@
       display: block;
     }
 
+    .newsletter {
+      border-top: 1px solid var(--line);
+      background: var(--soft);
+    }
+
+    .newsletter-inner {
+      width: min(var(--max), calc(100% - 40px));
+      margin: 0 auto;
+      padding: 48px 0 52px;
+    }
+
+    .newsletter h2 {
+      font-size: clamp(2rem, 6vw, 3.25rem);
+    }
+
+    .newsletter-subhead {
+      max-width: 570px;
+      margin: 16px 0 24px;
+      color: var(--muted);
+      font-size: 1.08rem;
+      line-height: 1.5;
+    }
+
+    .newsletter-form {
+      display: flex;
+      gap: 12px;
+      align-items: flex-end;
+    }
+
+    .newsletter-field {
+      flex: 1 1 auto;
+    }
+
+    .newsletter-field label {
+      display: block;
+      margin: 0 0 8px;
+      color: var(--ink);
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .newsletter-field input {
+      width: 100%;
+      min-height: 54px;
+      padding: 0 15px;
+      border: 1px solid var(--line);
+      background: #ffffff;
+      color: var(--ink);
+      font: inherit;
+    }
+
+    .newsletter-field input:focus {
+      border-color: var(--accent);
+      outline: 2px solid rgba(232, 53, 39, 0.18);
+      outline-offset: 0;
+    }
+
+    .newsletter-button {
+      min-height: 54px;
+      padding: 0 24px;
+      border: 2px solid #e83527;
+      background: #e83527;
+      color: #ffffff;
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .newsletter-button:focus-visible,
+    .newsletter-button:hover {
+      background: #111111;
+      border-color: #111111;
+      outline: none;
+    }
+
+    .newsletter-message {
+      display: none;
+      margin: 14px 0 0;
+      color: var(--ink);
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    .newsletter-message.is-visible {
+      display: block;
+    }
+
     .site-footer {
       border-top: 1px solid var(--line);
       color: var(--muted);
@@ -345,6 +433,20 @@
         padding: 0 18px;
       }
 
+      .newsletter-inner {
+        width: min(var(--max), calc(100% - 28px));
+        padding: 40px 0 44px;
+      }
+
+      .newsletter-form {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .newsletter-button {
+        width: 100%;
+      }
+
       .footer-row {
         flex-direction: column;
         gap: 10px;
@@ -395,7 +497,7 @@
     </section>
 
     <section class="proof" aria-label="Social proof">
-      <p>"Placeholder testimonial from a firmware engineer who rewrote the CV and finally got replies."</p>
+      <p>"I rewrote my CV using this guide on a Sunday afternoon. By Wednesday I had three recruiter emails and a hiring manager request. I had been applying for four months with nothing."<br>— Senior Firmware Engineer, Melbourne</p>
     </section>
 
     <section class="cta" aria-labelledby="cta-title">
@@ -405,6 +507,21 @@
       <p class="checkout-error" id="checkoutError" role="alert">Checkout is unavailable. Please try again.</p>
     </section>
   </main>
+
+  <section class="newsletter" id="newsletter" aria-labelledby="newsletter-title">
+    <div class="newsletter-inner">
+      <h2 id="newsletter-title">The Engineering Pulse</h2>
+      <p class="newsletter-subhead">Monthly insights for embedded and firmware engineers. Written by someone who has been in this industry since 1998.</p>
+      <form class="newsletter-form" id="newsletterForm">
+        <div class="newsletter-field">
+          <label for="newsletterEmail">Email address</label>
+          <input id="newsletterEmail" name="email" type="email" autocomplete="email" required>
+        </div>
+        <button class="newsletter-button" type="submit">Subscribe</button>
+      </form>
+      <p class="newsletter-message" id="newsletterMessage" role="status" aria-live="polite"></p>
+    </div>
+  </section>
 
   <footer class="site-footer">
     <div class="footer-inner">
@@ -419,6 +536,10 @@
     const checkoutEndpoint = "https://runtimeresume.io/api/cv-guide/checkout";
     const buyButton = document.getElementById("buyButton");
     const checkoutError = document.getElementById("checkoutError");
+    const newsletterEndpoint = "https://pulse.runtimerec.com/subscription/form";
+    const newsletterForm = document.getElementById("newsletterForm");
+    const newsletterMessage = document.getElementById("newsletterMessage");
+    const newsletterListUuid = "YOUR_LIST_UUID"; // Replace YOUR_LIST_UUID with the Listmonk list UUID.
 
     buyButton.addEventListener("click", async (event) => {
       event.preventDefault();
@@ -438,6 +559,36 @@
       } catch (error) {
         checkoutError.classList.add("is-visible");
         buyButton.removeAttribute("aria-busy");
+      }
+    });
+
+    newsletterForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      newsletterMessage.classList.remove("is-visible");
+
+      const formData = new FormData(newsletterForm);
+      const payload = new URLSearchParams();
+      payload.append("email", formData.get("email"));
+      payload.append("name", "");
+      payload.append("l[]", newsletterListUuid);
+
+      try {
+        const response = await fetch(newsletterEndpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
+          },
+          body: payload
+        });
+        if (!response.ok) {
+          throw new Error("Newsletter request failed");
+        }
+        newsletterForm.reset();
+        newsletterMessage.textContent = "You are on the list. Next issue lands soon.";
+        newsletterMessage.classList.add("is-visible");
+      } catch (error) {
+        newsletterMessage.textContent = "Subscription is unavailable. Please try again.";
+        newsletterMessage.classList.add("is-visible");
       }
     });
   </script>
