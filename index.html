@@ -286,6 +286,22 @@
       display: block;
     }
 
+    .thank-you {
+      display: none;
+      margin: 0 0 58px;
+      padding: 28px 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      color: var(--ink);
+      font-size: 1.08rem;
+      font-weight: 700;
+      line-height: 1.5;
+    }
+
+    .thank-you.is-visible {
+      display: block;
+    }
+
     .site-footer {
       border-top: 1px solid var(--line);
       color: var(--muted);
@@ -403,8 +419,11 @@
       <h2 id="cta-title">Stop making the same CV mistakes.</h2>
       <p>A direct PDF guide from Lance Harvie, specialist embedded and firmware engineering recruiter since 1998 with 29,000 LinkedIn followers.</p>
       <a class="button" id="buyButton" href="https://runtimeresume.io/api/cv-guide/checkout">Get the guide. $27.</a>
-      <p class="checkout-error" id="checkoutError" role="alert">Checkout is unavailable. Please try again.</p>
+      <p class="checkout-error" id="checkoutError" role="alert">Something went wrong. Please try again.</p>
     </section>
+    <div class="thank-you" id="thank-you" hidden>
+      Thank you for your purchase. Check your email for your personalised download link. It expires in 72 hours.
+    </div>
   </main>
 
   <footer class="site-footer">
@@ -420,11 +439,20 @@
     const checkoutEndpoint = "https://runtimeresume.io/api/cv-guide/checkout";
     const buyButton = document.getElementById("buyButton");
     const checkoutError = document.getElementById("checkoutError");
+    const thankYou = document.getElementById("thank-you");
+    const buyButtonLabel = buyButton.textContent;
+    const urlParams = new URLSearchParams(window.location.search);
+
+    if (urlParams.get("thank_you") === "1" || window.location.pathname === "/thank-you") {
+      thankYou.hidden = false;
+      thankYou.classList.add("is-visible");
+    }
 
     buyButton.addEventListener("click", async (event) => {
       event.preventDefault();
       checkoutError.classList.remove("is-visible");
       buyButton.setAttribute("aria-busy", "true");
+      buyButton.textContent = "Loading...";
 
       try {
         const response = await fetch(checkoutEndpoint, { method: "POST" });
@@ -439,6 +467,7 @@
       } catch (error) {
         checkoutError.classList.add("is-visible");
         buyButton.removeAttribute("aria-busy");
+        buyButton.textContent = buyButtonLabel;
       }
     });
   </script>
