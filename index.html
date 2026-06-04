@@ -268,6 +268,23 @@
       outline: none;
     }
 
+    .button[aria-busy="true"] {
+      cursor: wait;
+      opacity: 0.75;
+    }
+
+    .checkout-error {
+      display: none;
+      margin: 12px 0 0;
+      color: #ffffff;
+      font-size: 0.92rem;
+      font-weight: 700;
+    }
+
+    .checkout-error.is-visible {
+      display: block;
+    }
+
     .site-footer {
       border-top: 1px solid var(--line);
       color: var(--muted);
@@ -384,7 +401,8 @@
     <section class="cta" aria-labelledby="cta-title">
       <h2 id="cta-title">Stop making the same CV mistakes.</h2>
       <p>A direct PDF guide from Lance Harvie, specialist embedded and firmware engineering recruiter since 1998 with 29,000 LinkedIn followers.</p>
-      <a class="button" href="#buy">Get the guide. $27.</a>
+      <a class="button" id="buyButton" href="https://runtimeresume.io/api/cv-guide/checkout">Get the guide. $27.</a>
+      <p class="checkout-error" id="checkoutError" role="alert">Checkout is unavailable. Please try again.</p>
     </section>
   </main>
 
@@ -397,5 +415,31 @@
       <p class="footer-note">Working on something for the embedded world. More soon.</p>
     </div>
   </footer>
+  <script>
+    const checkoutEndpoint = "https://runtimeresume.io/api/cv-guide/checkout";
+    const buyButton = document.getElementById("buyButton");
+    const checkoutError = document.getElementById("checkoutError");
+
+    buyButton.addEventListener("click", async (event) => {
+      event.preventDefault();
+      checkoutError.classList.remove("is-visible");
+      buyButton.setAttribute("aria-busy", "true");
+
+      try {
+        const response = await fetch(checkoutEndpoint, { method: "POST" });
+        if (!response.ok) {
+          throw new Error("Checkout request failed");
+        }
+        const payload = await response.json();
+        if (!payload.url) {
+          throw new Error("Checkout URL missing");
+        }
+        window.location.assign(payload.url);
+      } catch (error) {
+        checkoutError.classList.add("is-visible");
+        buyButton.removeAttribute("aria-busy");
+      }
+    });
+  </script>
 </body>
 </html>
