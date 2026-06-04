@@ -418,7 +418,7 @@
     <section class="cta" aria-labelledby="cta-title">
       <h2 id="cta-title">Stop making the same CV mistakes.</h2>
       <p>A direct PDF guide from Lance Harvie, specialist embedded and firmware engineering recruiter since 1998 with 29,000 LinkedIn followers.</p>
-      <a class="button" id="buyButton" href="https://runtimeresume.io/api/cv-guide/checkout">Get the guide. $27.</a>
+      <button class="button" id="buyButton" type="button">Get the guide. $27.</button>
       <p class="checkout-error" id="checkoutError" role="alert">Something went wrong. Please try again.</p>
     </section>
     <div class="thank-you" id="thank-you" hidden>
@@ -440,7 +440,7 @@
     const buyButton = document.getElementById("buyButton");
     const checkoutError = document.getElementById("checkoutError");
     const thankYou = document.getElementById("thank-you");
-    const buyButtonLabel = buyButton.textContent;
+    const buyButtonLabel = "Get the guide. $27.";
     const urlParams = new URLSearchParams(window.location.search);
 
     if (urlParams.get("thank_you") === "1" || window.location.pathname === "/thank-you") {
@@ -451,23 +451,28 @@
     buyButton.addEventListener("click", async (event) => {
       event.preventDefault();
       checkoutError.classList.remove("is-visible");
+      buyButton.disabled = true;
       buyButton.setAttribute("aria-busy", "true");
       buyButton.textContent = "Loading...";
 
       try {
-        const response = await fetch(checkoutEndpoint, { method: "POST" });
+        const response = await fetch(checkoutEndpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" }
+        });
         if (!response.ok) {
           throw new Error("Checkout request failed");
         }
-        const payload = await response.json();
-        if (!payload.url) {
+        const data = await response.json();
+        if (!data.url) {
           throw new Error("Checkout URL missing");
         }
-        window.location.assign(payload.url);
+        window.location.href = data.url;
       } catch (error) {
-        checkoutError.classList.add("is-visible");
+        buyButton.disabled = false;
         buyButton.removeAttribute("aria-busy");
         buyButton.textContent = buyButtonLabel;
+        alert("Something went wrong. Please try again.");
       }
     });
   </script>
