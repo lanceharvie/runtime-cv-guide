@@ -216,12 +216,33 @@
       border-top: 1px solid var(--line);
       color: var(--muted);
       font-size: 1.1rem;
-      font-style: italic;
       line-height: 1.5;
     }
 
-    .proof p {
+    .testimonial-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .testimonial-card {
+      padding: 18px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+    }
+
+    .testimonial-card p {
       margin: 0;
+      color: var(--ink);
+      font-style: italic;
+    }
+
+    .testimonial-card footer {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 0.84rem;
+      font-style: normal;
+      line-height: 1.4;
     }
 
     .cta {
@@ -352,6 +373,10 @@
         align-items: flex-start;
       }
 
+      .testimonial-grid {
+        grid-template-columns: 1fr;
+      }
+
       .cta {
         margin-bottom: 42px;
         padding: 38px 22px;
@@ -404,7 +429,7 @@
     </section>
 
     <section class="author" aria-label="About the author">
-      <div class="author-photo" aria-hidden="true">LH</div>
+      <img src="/1756549132020.png" alt="Lance Harvie" style="width:64px;height:64px;border-radius:50%;object-fit:cover;object-position:center top;">
       <div>
         <h3>Lance Harvie</h3>
         <p>Placing embedded and firmware engineers since 1998. Founder of RunTime Recruitment.</p>
@@ -412,7 +437,20 @@
     </section>
 
     <section class="proof" aria-label="Social proof">
-      <p>"I rewrote my CV using this guide on a Sunday afternoon. By Wednesday I had three recruiter emails and a hiring manager request. I had been applying for four months with nothing."<br>— Senior Firmware Engineer, Melbourne</p>
+      <div class="testimonial-grid">
+        <article class="testimonial-card">
+          <p>"I rewrote my CV using this guide on a Sunday afternoon. By Wednesday I had three recruiter emails and a hiring manager request. I had been applying for four months with nothing."</p>
+          <footer>Senior Firmware Engineer, Melbourne</footer>
+        </article>
+        <article class="testimonial-card">
+          <p>"The skills section rewrite alone was worth it. I had been listing everything I had ever touched. The guide showed me how to show depth instead of breadth. First interview in six weeks came within ten days."</p>
+          <footer>Embedded Systems Engineer, Brisbane</footer>
+        </article>
+        <article class="testimonial-card">
+          <p>"Blunt and specific. No generic career coach advice. The before and after examples for project descriptions are exactly what I needed. Applied the framework in one evening."</p>
+          <footer>Firmware Engineer, Austin TX</footer>
+        </article>
+      </div>
     </section>
 
     <section class="cta" aria-labelledby="cta-title">
